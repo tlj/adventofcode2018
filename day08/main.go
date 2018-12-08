@@ -33,19 +33,18 @@ type nodeStruct struct {
 	complexMetadatasum   int64
 }
 
-func getNode(instructions *[]int64, nodes *[]*nodeStruct, idx int) (*nodeStruct, int) {
+func getNode(instructions *[]int64, idx int) (*nodeStruct, int) {
 	node := nodeStruct{
 		numOfChildNodes: (*instructions)[idx],
 		numOfMetadataEntries:(*instructions)[idx+1],
 		childNodes:make([]*nodeStruct, (*instructions)[idx]),
 	}
-	*nodes = append(*nodes, &node)
 
 	idx+=2
 	var childNodeCount int64
 	for childNodeCount = 0; childNodeCount < node.numOfChildNodes; childNodeCount++ {
 		var childNode *nodeStruct
-		childNode, idx = getNode(instructions, nodes, idx)
+		childNode, idx = getNode(instructions, idx)
 		node.childNodes[childNodeCount] = childNode
 		node.totalMetadatasum += childNode.totalMetadatasum
 	}
@@ -75,9 +74,8 @@ func main() {
 	}
 
 	start := time.Now()
-	var nodes []*nodeStruct
 
-	root, _ := getNode(&instructions, &nodes, 0)
+	root, _ := getNode(&instructions, 0)
 
 	fmt.Printf("Part1: %d\n", root.totalMetadatasum)
 	fmt.Printf("Part2: %d\n", root.complexMetadatasum)
